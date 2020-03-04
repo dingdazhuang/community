@@ -1,0 +1,7 @@
+export const SET_TITLE = 'SET_TITLE'
+export const SET_USERINFO = 'SET_USERINFO'
+export const SET_EDITOR_TYPE = 'SET_EDITOR_TYPE'
+
+export const SET_LOTTERYDATA = 'SET_LOTTERYDATA'
+
+export const SET_USERDATA = 'SET_USERDATA'
