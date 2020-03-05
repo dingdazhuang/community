@@ -10,7 +10,7 @@ export default {
     handleTitle ({commit}, payload) { commit(types.SET_TITLE, payload) },
     login ({commit}, payload) {
         return new Promise((resolve, reject) => {
-            axios.post('./login/login', qs.stringify(payload)).then(response => {
+            axios.post('./login/login', qs.stringify(payload)).then(response => { // 序列化
                 let res = response.data
                 if (res.code == 200) commit(types.SET_USERINFO, res)
                 resolve(res)

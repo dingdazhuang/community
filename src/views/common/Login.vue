@@ -35,10 +35,93 @@
 </template>
 
 <script>
+import { mapMutations, mapActions } from 'vuex'
+import { initClientHeight } from 'common/js/dom'
+import { hex_md5 } from 'common/js/md5'
+
 export default {
   name: '',
   data () {
     return {
+      titleInfo: {
+        title: '登陆',
+        showIcon: false,
+        showBottomTab: true
+      },
+      loginParams: {
+        login_pwd: '',
+        login_user: '',
+        login_code: ''
+      },
+      isCodeShow: false,
+      verify: 'http://shop-test.73776.com/index.php/home/login/verify/'
+    }
+  },
+  methods: {
+    ...mapActions(['handleTitle', 'login']),
+    handleLogin() {
+      if (!this.loginParams.login_user || this.loginParams.login_pwd) {
+        Toast({
+          message: '请输入完整登陆信息',
+          position: 'middle',
+          duration: 2000
+        })
+        return;
+      } else if (this.isCodeShow && !this.loginParams.login_code) {
+        Toast({
+					message: '请输入验证码',
+					position: 'middle',
+					duration: 3000
+        })
+        return ;
+      }
+      let postParams = {...this.loginParams}
+      postParams.login_pwd = hex_md5(this.loginParams.login_pwd)
+      this.login(postParams).then(res => {
+        if (res.code == 200) {
+          let instance = Toast('登陆成功')
+          setTimeout(() => {
+            instance.close()
+            this.$router.go(-1)
+          }, 2000)
+        } else if (res.code == 700) {
+          this.isCodeShow = true
+        } else if (res.code == 400) {
+          Toast({
+            message: '登陆失败，请稍后重试',
+            position: 'middle',
+            duration: 2000
+          })
+        } else if (res.code == 402 || res.code == 401) {
+          Toast({
+            message: res.msg,
+            position: 'middle',
+            duration: 3000
+          })
+        }
+      })
+    },
+    changeVerify(ev) {
+      ev = ev || event
+      target = ev.currentTarget
+      target.src += Math.floor(Math.random() * 10 + 1)
+    },
+    wxLogin() {
+      this.notAllow()
+    },
+    qqLogin() {
+      this.notAllow()
+    },
+    notAllow() {
+      Toast({message:"暂不支持该功能",duration: 1000})
+    },
+    mounted() {
+      this.handleTitle({
+        title: this.titleInfo.title,
+        showIcon: this.titleInfo.showIcon,
+        showBottomTab: this.titleInfo.showBottomTab
+      })
+      initClientHeight(document.querySelector('.login'))
     }
   }
 }
